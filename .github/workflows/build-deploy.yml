@@ -1,0 +1,89 @@
+name: Build APK, validate web controller, and deploy
+
+on:
+  push:
+    branches: [main, master]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build web controller
+        working-directory: controller/web-server
+        run: |
+          npm install
+          npm install --prefix server
+          npm run build
+          test -s build/index.html
+          node --check server/server.js
+
+      - name: Build Robot debug APK
+        working-directory: android
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :robot:assembleDebug --no-daemon
+          test -s robot/build/outputs/apk/debug/robot-debug.apk
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openbot-robot-debug-apk
+          path: android/robot/build/outputs/apk/debug/robot-debug.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload web build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openbot-web-controller-build
+          path: controller/web-server/build/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish APK download URL in workflow summary
+        shell: bash
+        run: |
+          echo "## OpenBot Robot APK" >> "$GITHUB_STEP_SUMMARY"
+          echo "Download the debug APK from this run's **Artifacts** section:" >> "$GITHUB_STEP_SUMMARY"
+          echo "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}#artifacts" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "This is a debug-signed APK for testing, not a Play Store release." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Create GitHub Release with APK on version tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: android/robot/build/outputs/apk/debug/robot-debug.apk
+          generate_release_notes: true
+
+      - name: Trigger Render deployment
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -n "$RENDER_DEPLOY_HOOK_URL" ]; then
+            curl --fail --silent --show-error -X POST "$RENDER_DEPLOY_HOOK_URL"
+            echo "Render deployment triggered."
+          else
+            echo "RENDER_DEPLOY_HOOK_URL is not configured; skipped Render deployment."
+          fi

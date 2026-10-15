@@ -1,0 +1,21 @@
+# Node
+node_modules/
+controller/web-server/build/
+controller/web-server/.env
+controller/web-server/server/.env
+npm-debug.log*
+
+# Android / Gradle
+.gradle/
+**/build/
+local.properties
+*.iml
+
+# Local secrets and credentials
+*service-account*.json
+firebase-adminsdk-*.json
+
+# Local patch backups
+*.before-accessories.bak
+controller/web-server/server/.env.*
+!controller/web-server/server/.env.example
