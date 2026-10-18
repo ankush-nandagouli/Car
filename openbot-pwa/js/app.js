@@ -44,9 +44,14 @@ function onUsbData(bytes) {
 }
 async function connectUSB() {
     if (transport) return;
-    const candidates = window.UsbTransport ? UsbTransport.createTransports() : [];
+    const want = $("transportSel") ? $("transportSel").value : "auto";
+    const candidates = (window.UsbTransport ? UsbTransport.createTransports() : []).filter(
+        (t) => want === "auto" || (want === "serial" && t.kind === "Web Serial") || (want === "usb" && t.kind === "WebUSB"),
+    );
     if (!candidates.length) {
-        const msg = !window.isSecureContext
+        const msg = want !== "auto"
+            ? (want === "serial" ? "Web Serial" : "WebUSB") + " is not available in this browser. Choose the other method or Auto."
+            : !window.isSecureContext
             ? "USB needs HTTPS (or localhost). Open the deployed https:// URL in Chrome."
             : "Neither Web Serial nor WebUSB is available. Use Chrome (not Firefox/Samsung Internet/in-app browser) on Android.";
         log("Connect failed: " + msg);
@@ -413,3 +418,4 @@ window.addEventListener("beforeunload", () => {
     } catch { }
     stopCamera();
 });
+log("USB support: Web Serial " + ("serial" in navigator ? "yes" : "no") + ", WebUSB " + ("usb" in navigator ? "yes" : "no") + ", secure context " + (window.isSecureContext ? "yes" : "no"));
