@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#0b1220">
+    <meta name="description" content="On-device AI robot controller for ESP32-S3 over USB-C">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="assets/icon.svg">
+    <link rel="stylesheet" href="style.css">
+    <title>OpenBot PWA</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js" defer></script>
+    <script src="js/transport.js" defer></script>
+    <script src="js/app.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <div class="brand">
+            <div class="logo">OB</div>
+            <div>
+                <h1>OpenBot PWA</h1>
+                <p>PHONE AI · ESP32-S3 CONTROL</p>
+            </div>
+        </div><span id="appStatus" class="pill">READY</span>
+    </header>
+    <main>
+        <section class="hero">
+            <div>
+                <p class="eyebrow">ROBOT CONSOLE</p>
+                <h2>Your phone is the brain.</h2>
+                <p>On-device vision and navigation logic, with low-level motor control on the ESP32-S3.</p>
+            </div>
+            <div class="connect-box">
+                <div class="status-line"><span class="dot" id="usbDot"></span><span id="usbStatus">USB
+                        disconnected</span></div><button id="connectBtn" class="primary">Connect USB-C</button><button
+                    id="disconnectBtn" class="secondary" disabled>Disconnect</button>
+            </div>
+        </section>
+        <section class="grid">
+            <article class="panel camera-panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">PERCEPTION</p>
+                        <h3>Live camera</h3>
+                    </div><span id="visionStatus" class="pill">OFF</span>
+                </div>
+                <div class="camera-wrap"><video id="video" autoplay playsinline muted></video><canvas
+                        id="overlay"></canvas>
+                    <div id="cameraPlaceholder">Camera preview appears here</div>
+                </div>
+                <div class="actions"><button id="cameraBtn" class="primary">Start camera</button><button id="modelBtn"
+                        class="secondary">Load object model</button></div>
+                <div class="stats">
+                    <div><small>INFERENCE</small><strong id="fps">— FPS</strong></div>
+                    <div><small>OBJECTS</small><strong id="objectCount">0</strong></div>
+                    <div><small>MODEL</small><strong id="modelState">Not loaded</strong></div>
+                </div>
+                <div id="detections" class="detections">Detected objects will be listed here.</div>
+            </article>
+            <article class="panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">DRIVE CONTROL</p>
+                        <h3>Manual joystick</h3>
+                    </div><span id="driveState" class="pill">STOPPED</span>
+                </div>
+                <div class="joystick-area">
+                    <div id="joystick" class="joystick">
+                        <div id="stick" class="stick"></div>
+                    </div>
+                    <p>Drag to drive · release to stop</p>
+                </div>
+                <div class="speed-row"><label for="speed">Speed limit <b id="speedLabel">120 / 255</b></label><input
+                        id="speed" type="range" min="50" max="255" value="120"></div>
+                <div class="drive-grid"><button data-drive="forward" class="drive">▲</button><button data-drive="left"
+                        class="drive">◀</button><button data-drive="stop" class="stop">STOP</button><button
+                        data-drive="right" class="drive">▶</button><button data-drive="reverse" class="drive">▼</button>
+                </div>
+                <p class="hint">Commands use OpenBot-style serial messages: <code>c&lt;left&gt;,&lt;right&gt;</code> and
+                    <code>h</code> for stop.</p>
+            </article>
+            <article class="panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">AUTONOMY</p>
+                        <h3>AI modes</h3>
+                    </div><span class="pill">BETA</span>
+                </div>
+                <div class="mode-list"><button id="trackingBtn" class="mode"><span
+                            class="mode-icon">◎</span><span><b>Object tracking</b><small>Detect objects and select a
+                                target</small></span><span class="toggle" id="trackingToggle">OFF</span></button><button
+                        id="roamBtn" class="mode"><span class="mode-icon">⌁</span><span><b>Free
+                                roam</b><small>Experimental vision-driven steering</small></span><span class="toggle"
+                            id="roamToggle">OFF</span></button></div>
+                <div class="warning"><b>Safety:</b> Free roam is only a prototype. Generic object detection is not
+                    obstacle-distance sensing. Test with wheels lifted, low speed, and a physical power cutoff.</div>
+                <div class="actions"><button id="estopBtn" class="danger">Emergency stop</button><button
+                        id="clearLogBtn" class="secondary">Clear log</button></div>
+            </article>
+            <article class="panel">
+                <div class="panel-head">
+                    <div>
+                        <p class="eyebrow">USB TELEMETRY</p>
+                        <h3>Serial monitor</h3>
+                    </div><span id="rxCount" class="pill">0 RX</span>
+                </div>
+                <div class="telemetry">
+                    <div><small>LEFT</small><strong id="leftVal">0</strong></div>
+                    <div><small>RIGHT</small><strong id="rightVal">0</strong></div>
+                    <div><small>LINK</small><strong id="linkVal">OFFLINE</strong></div>
+                </div>
+                <pre id="log" aria-live="polite">App initialized. Connect the robot to begin.</pre>
+                <div class="actions"><button id="pingBtn" class="secondary" disabled>Send status ping</button><button
+                        id="sendTestBtn" class="secondary" disabled>Motor test (low)</button></div>
+            </article>
+        </section>
+        <section class="panel setup">
+            <p class="eyebrow">CONNECTION NOTES</p>
+            <h3>First-time setup</h3>
+            <ol>
+                <li>Open this app in a supported Android Chrome version and install it from the browser menu if desired.
+                </li>
+                <li>Connect the ESP32-S3 using a data-capable USB-C cable and an OTG-capable phone.</li>
+                <li>Tap <b>Connect USB-C</b> and grant USB/serial permission.</li>
+                <li>Start camera and load the model. First model load needs internet; subsequent availability depends on
+                    browser caching.</li>
+            </ol>
+            <p class="hint">Android USB serial browser support varies by Chrome version, phone, and ESP32 USB interface.
+                If the port cannot be opened, use a native Android USB-serial bridge or a browser/device combination
+                that supports Web Serial/WebUSB.</p>
+        </section>
+    </main>
+    <footer>OpenBot PWA prototype · local inference · no cloud video upload</footer>
+</body>
+
+</html>

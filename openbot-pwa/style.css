@@ -1,0 +1,513 @@
+:root {
+    color-scheme: dark;
+    --bg: #080d17;
+    --panel: #101827;
+    --line: #263348;
+    --text: #edf3ff;
+    --muted: #98a9c2;
+    --blue: #6aa8ff;
+    --green: #53e0b2;
+    --red: #ff647c
+}
+
+* {
+    box-sizing: border-box
+}
+
+body {
+    margin: 0;
+    background: radial-gradient(ellipse at top, #14223a 0, #080d17 52%);
+    color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, Segoe UI, sans-serif
+}
+
+header,
+main,
+footer {
+    width: min(1180px, 100% - 28px);
+    margin: auto
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0
+}
+
+.brand {
+    display: flex;
+    gap: 12px;
+    align-items: center
+}
+
+.logo {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #70b5ff, #7c7bff);
+    color: #08101d;
+    font-weight: 900
+}
+
+h1,
+h2,
+h3,
+p {
+    margin: 0
+}
+
+h1 {
+    font-size: 18px
+}
+
+header p,
+.eyebrow {
+    font-size: 10px;
+    letter-spacing: .17em;
+    color: var(--muted);
+    font-weight: 800
+}
+
+.pill {
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 10px;
+    font-weight: 800;
+    color: var(--muted);
+    white-space: nowrap
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 24px;
+    align-items: center;
+    padding: 26px 0 30px
+}
+
+.hero h2 {
+    font-size: clamp(27px, 4vw, 43px);
+    letter-spacing: -.04em;
+    margin: 8px 0
+}
+
+.hero p:not(.eyebrow) {
+    color: var(--muted);
+    max-width: 580px
+}
+
+.connect-box {
+    border: 1px solid var(--line);
+    background: #0d1523c9;
+    border-radius: 18px;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px
+}
+
+.status-line {
+    grid-column: 1/-1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 3px
+}
+
+.dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #77849a
+}
+
+.dot.on {
+    background: var(--green);
+    box-shadow: 0 0 12px #53e0b266
+}
+
+button {
+    font: inherit;
+    font-weight: 750;
+    cursor: pointer;
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    padding: 11px 13px;
+    color: var(--text);
+    background: #182338;
+    touch-action: manipulation
+}
+
+button:disabled {
+    opacity: .4;
+    cursor: not-allowed
+}
+
+.primary {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #07111f
+}
+
+.secondary {
+    background: #121c2c
+}
+
+.danger,
+.stop {
+    background: #541e2b;
+    border-color: #8c3045;
+    color: #ffdce3
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px
+}
+
+.panel {
+    min-width: 0;
+    border: 1px solid var(--line);
+    background: linear-gradient(150deg, #111b2b, #0c1421);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 12px 36px #0002
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px
+}
+
+.panel h3 {
+    font-size: 18px;
+    margin-top: 3px
+}
+
+.camera-wrap {
+    position: relative;
+    background: #050910;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    display: grid;
+    place-items: center
+}
+
+.camera-wrap video,
+.camera-wrap canvas {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    inset: 0;
+    object-fit: cover
+}
+
+.camera-wrap canvas {
+    pointer-events: none
+}
+
+#cameraPlaceholder {
+    color: var(--muted);
+    font-size: 13px
+}
+
+.actions {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
+    margin-top: 13px
+}
+
+.actions button {
+    flex: 1
+}
+
+.stats,
+.telemetry {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 15px
+}
+
+.stats>div,
+.telemetry>div {
+    padding: 10px;
+    background: #0a1220;
+    border-radius: 10px;
+    min-width: 0
+}
+
+.stats small,
+.telemetry small {
+    display: block;
+    color: var(--muted);
+    font-size: 9px;
+    letter-spacing: .1em
+}
+
+.stats strong,
+.telemetry strong {
+    display: block;
+    font-size: 17px;
+    margin-top: 3px
+}
+
+.detections {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+    min-height: 18px
+}
+
+.joystick-area {
+    text-align: center;
+    padding: 3px 0 10px
+}
+
+.joystick-area p {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 8px
+}
+
+.joystick {
+    width: 180px;
+    height: 180px;
+    max-width: 70vw;
+    max-height: 70vw;
+    margin: auto;
+    border-radius: 50%;
+    border: 1px solid #3b4e69;
+    background: radial-gradient(circle, #1c2a40, #0a1220 70%);
+    display: grid;
+    place-items: center;
+    touch-action: none;
+    position: relative
+}
+
+.joystick:before,
+.joystick:after {
+    content: "";
+    position: absolute;
+    background: #2b3b53
+}
+
+.joystick:before {
+    width: 1px;
+    height: 100%
+}
+
+.joystick:after {
+    height: 1px;
+    width: 100%
+}
+
+.stick {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: 2px solid #a9d1ff;
+    background: linear-gradient(145deg, #70b5ff, #4b70d9);
+    z-index: 1;
+    box-shadow: 0 4px 20px #4d9cff44
+}
+
+.speed-row {
+    margin: 14px 0
+}
+
+.speed-row label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted)
+}
+
+input[type=range] {
+    width: 100%;
+    accent-color: var(--blue);
+    margin-top: 8px
+}
+
+.drive-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+    max-width: 270px;
+    margin: 10px auto
+}
+
+.drive-grid button {
+    min-height: 42px
+}
+
+.drive-grid button:nth-child(1) {
+    grid-column: 2
+}
+
+.drive-grid button:nth-child(2) {
+    grid-column: 1;
+    grid-row: 2
+}
+
+.drive-grid button:nth-child(3) {
+    grid-column: 2;
+    grid-row: 2
+}
+
+.drive-grid button:nth-child(4) {
+    grid-column: 3;
+    grid-row: 2
+}
+
+.drive-grid button:nth-child(5) {
+    grid-column: 2;
+    grid-row: 3
+}
+
+.hint {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 12px
+}
+
+code {
+    color: #a8d0ff
+}
+
+.mode-list {
+    display: grid;
+    gap: 10px
+}
+
+.mode {
+    display: flex;
+    align-items: center;
+    text-align: left;
+    gap: 12px;
+    background: #0b1422;
+    padding: 13px
+}
+
+.mode-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #1a2a41;
+    font-size: 23px;
+    color: var(--blue)
+}
+
+.mode>span:nth-child(2) {
+    flex: 1
+}
+
+.mode b,
+.mode small {
+    display: block
+}
+
+.mode small {
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 400
+}
+
+.toggle {
+    font-size: 10px;
+    color: var(--muted)
+}
+
+.warning {
+    margin-top: 14px;
+    padding: 12px;
+    border: 1px solid #6c4a2b;
+    background: #2a2117;
+    border-radius: 10px;
+    color: #eacb9e;
+    font-size: 12px
+}
+
+.telemetry {
+    margin-top: 0
+}
+
+pre {
+    height: 130px;
+    overflow: auto;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    background: #050a12;
+    border: 1px solid #1b293d;
+    border-radius: 10px;
+    padding: 12px;
+    color: #a9c4e9;
+    font: 11px/1.55 ui-monospace, monospace;
+    margin: 12px 0 0
+}
+
+.setup {
+    margin-top: 16px
+}
+
+.setup h3 {
+    margin: 5px 0 12px
+}
+
+.setup ol {
+    padding-left: 21px;
+    color: #c4d1e4
+}
+
+.setup li {
+    padding: 3px 0
+}
+
+footer {
+    text-align: center;
+    padding: 25px 0 35px;
+    color: #6f819b;
+    font-size: 11px
+}
+
+@media(max-width:720px) {
+    .hero {
+        grid-template-columns: 1fr;
+        gap: 16px;
+        padding-top: 10px
+    }
+
+    .grid {
+        grid-template-columns: 1fr
+    }
+
+    .panel {
+        padding: 15px
+    }
+
+    header,
+    main,
+    footer {
+        width: calc(100% - 22px)
+    }
+
+    .camera-wrap {
+        aspect-ratio: 4/3
+    }
+
+    .hero h2 {
+        font-size: 31px
+    }
+}
