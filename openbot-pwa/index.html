@@ -35,7 +35,11 @@
             </div>
             <div class="connect-box">
                 <div class="status-line"><span class="dot" id="usbDot"></span><span id="usbStatus">USB
-                        disconnected</span></div><button id="connectBtn" class="primary">Connect USB-C</button><button
+                        disconnected</span></div><select id="transportSel" aria-label="USB method" style="width:100%;margin:0 0 8px;padding:10px;border-radius:10px;background:#0b1220;color:inherit;border:1px solid var(--line)">
+                    <option value="auto">Auto (Web Serial, then WebUSB)</option>
+                    <option value="serial">Web Serial (navigator.serial)</option>
+                    <option value="usb">WebUSB (navigator.usb)</option>
+                </select><button id="connectBtn" class="primary">Connect USB-C</button><button
                     id="disconnectBtn" class="secondary" disabled>Disconnect</button>
             </div>
         </section>
